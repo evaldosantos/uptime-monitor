@@ -8,23 +8,9 @@ const https = require('https');
 const url = require('url');
 const fs = require('fs');
 const StringDecoder = require('string_decoder').StringDecoder;
-const config = require('./config');
-const _data = require('./lib/data');
-
-// TESTING
-// @TODO delete this
-_data.create('test', 'newFile', { foo: 'bar' }, function(err) {
-  console.log('this was the error', err);
-});
-// _data.read('test', 'newFile1', function(err, data) {
-//   console.log('this was the error', err, 'and this was the data', data);
-// });
-// _data.update('test', 'newFile', { foo: 'ab' }, function(err) {
-//   console.log('this was the error', err);
-// });
-// _data.delete('test', 'newFile', function(err) {
-//   console.log('this was the error', err);
-// });
+const config = require('./lib/config');
+const handlers = require('./lib/handlers');
+const helpers = require('./lib/helpers');
 
 // Instantiate the HTTP server
 const httpServer = http.createServer(unifiedServer);
@@ -84,11 +70,12 @@ function unifiedServer(req, res) {
       queryStringObject,
       method,
       headers,
-      payload: buffer
+      payload: helpers.parseJsonToObject(buffer)
     };
 
     // Route the request to the handler specified in the router
     chosenHandler(data, function(statusCode, payload) {
+      console.log(statusCode, payload)
       // Use the status code called back by the handler, or default ot 200
       statusCode = typeof(statusCode) === 'number' ? statusCode : 200;
 
@@ -109,20 +96,10 @@ function unifiedServer(req, res) {
   });
 }
 
-// Define a handlers
-var handlers = {}
 
-// Ping handler
-handlers.ping = (data, callback) => {
-  callback(200);
-}
-
-// Not found handler
-handlers.notFound = function(data, callback) {
-  callback(404);
-};
 
 // Define a request router
 var router = {
-  ping: handlers.ping
+  ping: handlers.ping,
+  users: handlers.users
 }

@@ -75,7 +75,6 @@ function unifiedServer(req, res) {
 
     // Route the request to the handler specified in the router
     chosenHandler(data, function(statusCode, payload) {
-      console.log(statusCode, payload)
       // Use the status code called back by the handler, or default ot 200
       statusCode = typeof(statusCode) === 'number' ? statusCode : 200;
 
@@ -101,5 +100,6 @@ function unifiedServer(req, res) {
 // Define a request router
 var router = {
   ping: handlers.ping,
-  users: handlers.users
+  users: handlers.users,
+  tokens: handlers.tokens
 }
